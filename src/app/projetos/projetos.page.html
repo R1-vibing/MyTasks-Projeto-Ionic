@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="briefcase-outline"></ion-icon>
+      Projetos
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Filtro por categoria -->
+  <ion-card *ngIf="todasCategorias.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="filter-outline"></ion-icon>
+        Filtrar por Categoria
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Categoria</ion-label>
+        <ion-select
+          [(ngModel)]="categoriaSelecionada"
+          (ionChange)="filtrarPorCategoria()"
+          placeholder="Selecione uma categoria">
+          <ion-select-option [value]="null">Todas as categorias</ion-select-option>
+          <ion-select-option *ngFor="let cat of todasCategorias" [value]="cat.id">
+            {{ cat.nome }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-button
+        *ngIf="categoriaFiltro"
+        expand="block"
+        fill="outline"
+        color="medium"
+        (click)="removerFiltro()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Remover Filtro
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Formulário para adicionar/editar projeto -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="add-circle-outline"></ion-icon>
+        {{ projetoEditando ? 'Editar Projeto' : 'Novo Projeto' }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Nome do Projeto</ion-label>
+        <ion-input
+          [(ngModel)]="nomeProjeto"
+          placeholder="Ex: Projeto Angular"
+          clearInput>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Categoria</ion-label>
+        <ion-select
+          [(ngModel)]="categoriaSelecionada"
+          placeholder="Selecione uma categoria">
+          <ion-select-option *ngFor="let cat of todasCategorias" [value]="cat.id">
+            {{ cat.nome }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <div class="ion-margin-top">
+        <ion-button
+          *ngIf="!projetoEditando"
+          expand="block"
+          color="primary"
+          (click)="adicionarProjeto()">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Adicionar
+        </ion-button>
+
+        <div *ngIf="projetoEditando" class="button-group">
+          <ion-button
+            expand="block"
+            color="success"
+            (click)="salvarEdicao()">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Salvar
+          </ion-button>
+          <ion-button
+            expand="block"
+            color="medium"
+            (click)="cancelarEdicao()">
+            <ion-icon name="close-outline" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de projetos -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="list-outline"></ion-icon>
+        Projetos ({{ projetos.length }})
+        <span *ngIf="categoriaFiltro" class="filter-badge">
+          - Filtrado
+        </span>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="projetos.length > 0">
+        <ion-item *ngFor="let projeto of projetos">
+          <ion-icon name="briefcase" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ projeto.nome }}</h2>
+            <p>
+              <ion-icon name="folder-outline"></ion-icon>
+              {{ getNomeCategoria(projeto.categoriaId) }}
+            </p>
+          </ion-label>
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="verTarefas(projeto.id)"
+            title="Ver Tarefas">
+            <ion-icon name="list-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="success"
+            (click)="criarTarefa(projeto.id)"
+            title="Criar Tarefa">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="iniciarEdicao(projeto)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="danger"
+            (click)="removerProjeto(projeto)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-item *ngIf="projetos.length === 0">
+        <ion-label class="ion-text-center">
+          <p>Nenhum projeto cadastrado ainda.</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

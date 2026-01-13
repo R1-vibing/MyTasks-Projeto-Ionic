@@ -1,0 +1,61 @@
+// Estilos para a página de lista de tarefas
+
+.tarefa-atrasada {
+  --background: #ffebee;
+  border-left: 4px solid #eb445a;
+  color: #000000;
+  
+  ion-label {
+    color: #000000;
+  }
+}
+
+.project-badge {
+  font-size: 0.8em;
+  opacity: 0.8;
+  color: #1e88e5;
+  font-weight: 500;
+}
+
+.filter-badge {
+  font-size: 0.7em;
+  color: #1e88e5;
+  font-weight: 500;
+}
+
+ion-card {
+  --background: #ffffff;
+  --color: #000000 !important;
+  border: 1px solid #e3f2fd;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p {
+    color: #000000 !important;
+  }
+  
+  ion-card-title,
+  ion-card-content {
+    color: #000000 !important;
+  }
+}
+
+ion-item {
+  --background: #ffffff;
+  --color: #000000 !important;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  ion-label {
+    color: #000000 !important;
+    
+    h2, p {
+      color: #000000 !important;
+    }
+  }
+}
+

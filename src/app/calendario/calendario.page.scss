@@ -1,0 +1,48 @@
+// Estilos para a página de calendário
+
+.tarefa-atrasada {
+  --background: #ffebee;
+  border-left: 4px solid #eb445a;
+  color: #000000;
+  
+  ion-label {
+    color: #000000;
+  }
+}
+
+ion-card {
+  --background: #ffffff;
+  --color: #000000 !important;
+  border: 1px solid #e3f2fd;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p {
+    color: #000000 !important;
+  }
+  
+  ion-card-title,
+  ion-card-content {
+    color: #000000 !important;
+  }
+}
+
+ion-item {
+  --background: #ffffff;
+  --color: #000000 !important;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  ion-label {
+    color: #000000 !important;
+    
+    h2, h3, p {
+      color: #000000 !important;
+    }
+  }
+}
+

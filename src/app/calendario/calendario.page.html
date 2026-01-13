@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="calendar-outline"></ion-icon>
+      Calendário de Tarefas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Calendário -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="calendar-number-outline"></ion-icon>
+        Selecione uma Data
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Data</ion-label>
+        <ion-input
+          type="date"
+          [(ngModel)]="dataSelecionada"
+          (ionChange)="onDataChange()"
+          placeholder="Selecione uma data">
+        </ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="dataSelecionada">
+        <ion-label>
+          <h3>{{ formatarData(dataSelecionada) }}</h3>
+          <p *ngIf="tarefasDoDia.length > 0">
+            {{ tarefasDoDia.length }} tarefa(s) nesta data
+          </p>
+          <p *ngIf="tarefasDoDia.length === 0">
+            Nenhuma tarefa nesta data
+          </p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de tarefas do dia selecionado -->
+  <ion-card *ngIf="tarefasDoDia.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="list-outline"></ion-icon>
+        Tarefas do Dia
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item
+          *ngFor="let tarefa of tarefasDoDia"
+          button
+          (click)="verTarefa(tarefa.id)"
+          [class.tarefa-atrasada]="isTarefaAtrasada(tarefa)">
+          <ion-icon
+            *ngIf="isTarefaAtrasada(tarefa)"
+            name="alert-circle"
+            slot="start"
+            color="danger">
+          </ion-icon>
+          <ion-icon
+            *ngIf="!isTarefaAtrasada(tarefa)"
+            name="checkmark-circle-outline"
+            slot="start"
+            color="primary">
+          </ion-icon>
+          <ion-label>
+            <h2>{{ tarefa.titulo }}</h2>
+            <p>{{ tarefa.descricao || 'Sem descrição' }}</p>
+            <p>
+              <ion-icon name="time-outline"></ion-icon>
+              Data limite: {{ formatarData(tarefa.dataLimite) }}
+            </p>
+          </ion-label>
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Mensagem quando não há tarefas -->
+  <ion-card *ngIf="dataSelecionada && tarefasDoDia.length === 0">
+    <ion-card-content>
+      <ion-item>
+        <ion-label class="ion-text-center">
+          <h2>Nenhuma tarefa nesta data</h2>
+          <p>Selecione outra data ou crie uma nova tarefa.</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Resumo de datas com tarefas -->
+  <ion-card *ngIf="getDatasComTarefas().length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Datas com Tarefas
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item
+          *ngFor="let data of getDatasComTarefas()"
+          button
+          (click)="dataSelecionada = data; filtrarTarefasPorData()">
+          <ion-icon name="calendar" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{ formatarData(data) }}</h3>
+            <p>{{ getNumeroTarefas(data) }} tarefa(s)</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

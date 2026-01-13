@@ -1,0 +1,67 @@
+// Estilos para a página de tarefa
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  
+  ion-button {
+    width: 100%;
+  }
+}
+
+.tarefa-atrasada {
+  --background: #ffebee;
+  border-left: 4px solid #eb445a;
+  color: #000000;
+  
+  ion-label {
+    color: #000000;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 2px solid #e3f2fd;
+}
+
+ion-card {
+  --background: #ffffff;
+  --color: #000000 !important;
+  border: 1px solid #e3f2fd;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6, p {
+    color: #000000 !important;
+  }
+  
+  ion-card-title,
+  ion-card-subtitle,
+  ion-card-content {
+    color: #000000 !important;
+  }
+}
+
+ion-item {
+  --background: #ffffff;
+  --color: #000000 !important;
+  
+  * {
+    color: #000000 !important;
+  }
+  
+  ion-label {
+    color: #000000 !important;
+    
+    h2, h3, p {
+      color: #000000 !important;
+    }
+  }
+}
+

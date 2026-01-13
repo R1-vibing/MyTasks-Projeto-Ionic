@@ -1,0 +1,30 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>{{ title }}</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <ion-list>
+      <ion-reorder-group (ionItemReorder)="reorderTasks($event)" disabled="false">
+
+        <ion-item *ngFor="let task of tasks" button (click)="selectTask(task)">
+          <ion-label>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+          </ion-label>
+
+          <ion-button fill="clear" color="primary" (click)="editTask(task); $event.stopPropagation()">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" color="danger" (click)="deleteTask(task.id); $event.stopPropagation()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
+
+      </ion-reorder-group>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,184 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="document-text-outline"></ion-icon>
+      {{ isNova ? 'Nova Tarefa' : 'Detalhes da Tarefa' }}
+    </ion-title>
+    <ion-buttons slot="end" *ngIf="!isNova && !isEditando && tarefa">
+      <ion-button (click)="iniciarEdicao()">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="removerTarefa()" color="danger">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Alerta de tarefa em atraso -->
+  <ion-card *ngIf="tarefa && isTarefaAtrasada()" color="danger">
+    <ion-card-content>
+      <ion-item>
+        <ion-icon name="warning-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Tarefa em Atraso</h2>
+          <p>Esta tarefa está vencida!</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Modo visualização -->
+  <ion-card *ngIf="tarefa && !isEditando">
+    <ion-card-header>
+      <ion-card-title>{{ tarefa.titulo }}</ion-card-title>
+      <ion-card-subtitle>
+        <ion-icon name="briefcase-outline"></ion-icon>
+        {{ getNomeProjeto(tarefa.projetoId) }}
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ tarefa.descricao || 'Sem descrição' }}</p>
+      
+      <ion-item>
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Data Limite</h3>
+          <p>{{ formatarData(tarefa.dataLimite) }}</p>
+        </ion-label>
+      </ion-item>
+
+      <div *ngIf="tarefa.imagem" class="ion-margin-top">
+        <img [src]="tarefa.imagem" alt="Imagem da tarefa" style="max-width: 100%; border-radius: 8px;">
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Modo edição/criação -->
+  <ion-card *ngIf="isEditando">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="create-outline"></ion-icon>
+        {{ isNova ? 'Nova Tarefa' : 'Editar Tarefa' }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Título *</ion-label>
+        <ion-input
+          [(ngModel)]="titulo"
+          placeholder="Ex: Estudar Angular"
+          clearInput>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Descrição</ion-label>
+        <ion-textarea
+          [(ngModel)]="descricao"
+          placeholder="Descrição detalhada da tarefa"
+          rows="4">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Data Limite (Opcional)</ion-label>
+        <ion-input
+          type="date"
+          [(ngModel)]="dataLimiteFormatada"
+          (ionChange)="onDataChange($event)"
+          placeholder="Selecione uma data">
+        </ion-input>
+        <ion-button
+          *ngIf="dataLimiteFormatada"
+          fill="clear"
+          color="danger"
+          slot="end"
+          (click)="limparDataLimite()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+      
+      <!-- Mostrar data selecionada -->
+      <ion-item *ngIf="dataLimiteFormatada">
+        <ion-label>
+          <p>Data selecionada: {{ formatarDataInput(dataLimiteFormatada) }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Projeto *</ion-label>
+        <ion-select
+          [(ngModel)]="projetoId"
+          placeholder="Selecione um projeto">
+          <ion-select-option *ngFor="let projeto of todosProjetos" [value]="projeto.id">
+            {{ projeto.nome }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Imagem (Opcional)</ion-label>
+        <input
+          type="file"
+          #fileInput
+          accept="image/*"
+          style="display: none;"
+          (change)="onFileSelected($event)">
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="primary"
+          (click)="fileInput.click()">
+          <ion-icon name="image-outline" slot="start"></ion-icon>
+          {{ imagem ? 'Alterar Imagem' : 'Selecionar Imagem do Dispositivo' }}
+        </ion-button>
+      </ion-item>
+
+      <div *ngIf="imagem" class="ion-margin-top">
+        <img [src]="imagem" alt="Preview" style="max-width: 100%; border-radius: 8px; border: 2px solid #e3f2fd;">
+        <ion-button
+          expand="block"
+          fill="clear"
+          color="danger"
+          (click)="removerImagem()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Remover Imagem
+        </ion-button>
+      </div>
+
+      <div class="ion-margin-top button-group">
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="salvarTarefa()">
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          {{ isNova ? 'Criar' : 'Salvar' }}
+        </ion-button>
+        <ion-button
+          expand="block"
+          color="medium"
+          (click)="cancelarEdicao()">
+          <ion-icon name="close-outline" slot="start"></ion-icon>
+          Cancelar
+        </ion-button>
+      </div>
+
+      <!-- Opção para mover tarefa entre projetos (apenas na edição) -->
+      <div *ngIf="!isNova && tarefa" class="ion-margin-top">
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="primary"
+          (click)="moverParaProjeto()">
+          <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+          Mover para Outro Projeto
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

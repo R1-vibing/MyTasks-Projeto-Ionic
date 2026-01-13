@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="folder-outline"></ion-icon>
+      Categorias
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Formulário para adicionar/editar categoria -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="add-circle-outline"></ion-icon>
+        {{ categoriaEditando ? 'Editar Categoria' : 'Nova Categoria' }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Nome da Categoria</ion-label>
+        <ion-input
+          [(ngModel)]="nomeCategoria"
+          placeholder="Ex: Escola, Trabalho, Pessoal"
+          clearInput>
+        </ion-input>
+      </ion-item>
+
+      <div class="ion-margin-top">
+        <ion-button
+          *ngIf="!categoriaEditando"
+          expand="block"
+          color="primary"
+          (click)="adicionarCategoria()">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Adicionar
+        </ion-button>
+
+        <div *ngIf="categoriaEditando" class="button-group">
+          <ion-button
+            expand="block"
+            color="success"
+            (click)="salvarEdicao()">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Salvar
+          </ion-button>
+          <ion-button
+            expand="block"
+            color="medium"
+            (click)="cancelarEdicao()">
+            <ion-icon name="close-outline" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de categorias -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="list-outline"></ion-icon>
+        Categorias Existentes ({{ categorias.length }})
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="categorias.length > 0">
+        <ion-item *ngFor="let categoria of categorias">
+          <ion-icon name="folder" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ categoria.nome }}</h2>
+          </ion-label>
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="iniciarEdicao(categoria)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="danger"
+            (click)="removerCategoria(categoria)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-item *ngIf="categorias.length === 0">
+        <ion-label class="ion-text-center">
+          <p>Nenhuma categoria cadastrada ainda.</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
