@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular';
 import { ListaPageRoutingModule } from './lista-routing.module';
 import { ListaPage } from './lista.page';
 
-// Importa o componente do cartão de tarefas
 import { TaskCardComponent } from '../components/task-card/task-card.component';
 
 @NgModule({

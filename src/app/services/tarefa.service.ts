@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { Tarefa } from '../models/tarefa.model';
 
-/**
- * Service para gerenciar CRUD de Tarefas
- * Isola toda a lógica de manipulação de tarefas
- */
+// Service de tarefas
 @Injectable({
   providedIn: 'root'
 })
@@ -17,9 +14,7 @@ export class TarefaService {
     this.init();
   }
 
-  /**
-   * Inicializa o storage e carrega o próximo ID
-   */
+  // Inicializa storage
   private async init() {
     await this.storage.create();
     const tarefas = await this.getAll();
@@ -28,25 +23,19 @@ export class TarefaService {
     }
   }
 
-  /**
-   * Obtém todas as tarefas
-   */
+  // Busca todas tarefas
   async getAll(): Promise<Tarefa[]> {
     const tarefas = await this.storage.get(this.STORAGE_KEY);
     return tarefas || [];
   }
 
-  /**
-   * Obtém tarefas de um projeto específico
-   */
+  // Busca tarefas de um projeto
   async getByProjeto(projetoId: number): Promise<Tarefa[]> {
     const tarefas = await this.getAll();
     return tarefas.filter(t => t.projetoId === projetoId);
   }
 
-  /**
-   * Obtém tarefas em atraso (data limite já passou)
-   */
+  // Busca tarefas em atraso
   async getTarefasAtrasadas(): Promise<Tarefa[]> {
     const tarefas = await this.getAll();
     const agora = new Date();
@@ -57,17 +46,13 @@ export class TarefaService {
     });
   }
 
-  /**
-   * Obtém uma tarefa por ID
-   */
+  // Busca tarefa por id
   async getById(id: number): Promise<Tarefa | null> {
     const tarefas = await this.getAll();
     return tarefas.find(t => t.id === id) || null;
   }
 
-  /**
-   * Cria uma nova tarefa
-   */
+  // Cria tarefa
   async create(tarefa: Omit<Tarefa, 'id'>): Promise<Tarefa> {
     const tarefas = await this.getAll();
     const novaTarefa: Tarefa = {
@@ -79,9 +64,7 @@ export class TarefaService {
     return novaTarefa;
   }
 
-  /**
-   * Atualiza uma tarefa existente
-   */
+  // Atualiza tarefa
   async update(id: number, tarefa: Partial<Tarefa>): Promise<boolean> {
     const tarefas = await this.getAll();
     const index = tarefas.findIndex(t => t.id === id);
@@ -92,9 +75,7 @@ export class TarefaService {
     return true;
   }
 
-  /**
-   * Remove uma tarefa
-   */
+  // Remove tarefa
   async delete(id: number): Promise<boolean> {
     const tarefas = await this.getAll();
     const index = tarefas.findIndex(t => t.id === id);
@@ -105,16 +86,12 @@ export class TarefaService {
     return true;
   }
 
-  /**
-   * Move uma tarefa para outro projeto
-   */
+  // Move tarefa para outro projeto
   async moverParaProjeto(tarefaId: number, novoProjetoId: number): Promise<boolean> {
     return await this.update(tarefaId, { projetoId: novoProjetoId });
   }
 
-  /**
-   * Reordena tarefas (atualiza a ordem no array)
-   */
+  // Reordena tarefas
   async reordenar(tarefas: Tarefa[]): Promise<void> {
     await this.storage.set(this.STORAGE_KEY, tarefas);
   }

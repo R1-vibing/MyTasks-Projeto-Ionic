@@ -3,9 +3,7 @@ import { Storage } from '@ionic/storage-angular';
 import { Projeto } from '../models/projeto.model';
 import { TarefaService } from './tarefa.service';
 
-/**
- * Service para gerenciar CRUD de Projetos
- */
+// Service de projetos
 @Injectable({
   providedIn: 'root'
 })
@@ -20,9 +18,7 @@ export class ProjetoService {
     this.init();
   }
 
-  /**
-   * Inicializa o storage e carrega o próximo ID
-   */
+  // Inicializa storage
   private async init() {
     await this.storage.create();
     const projetos = await this.getAll();
@@ -31,33 +27,25 @@ export class ProjetoService {
     }
   }
 
-  /**
-   * Obtém todos os projetos
-   */
+  // Busca todos projetos
   async getAll(): Promise<Projeto[]> {
     const projetos = await this.storage.get(this.STORAGE_KEY);
     return projetos || [];
   }
 
-  /**
-   * Obtém projetos filtrados por categoria
-   */
+  // Busca projetos por categoria
   async getByCategoria(categoriaId: number): Promise<Projeto[]> {
     const projetos = await this.getAll();
     return projetos.filter(p => p.categoriaId === categoriaId);
   }
 
-  /**
-   * Obtém um projeto por ID
-   */
+  // Busca projeto por id
   async getById(id: number): Promise<Projeto | null> {
     const projetos = await this.getAll();
     return projetos.find(p => p.id === id) || null;
   }
 
-  /**
-   * Cria um novo projeto
-   */
+  // Cria projeto
   async create(projeto: Omit<Projeto, 'id'>): Promise<Projeto> {
     const projetos = await this.getAll();
     const novoProjeto: Projeto = {
@@ -69,9 +57,7 @@ export class ProjetoService {
     return novoProjeto;
   }
 
-  /**
-   * Atualiza um projeto existente
-   */
+  // Atualiza projeto
   async update(id: number, projeto: Partial<Projeto>): Promise<boolean> {
     const projetos = await this.getAll();
     const index = projetos.findIndex(p => p.id === id);
@@ -82,15 +68,13 @@ export class ProjetoService {
     return true;
   }
 
-  /**
-   * Remove um projeto e todas as suas tarefas
-   */
+  // Remove projeto e suas tarefas
   async delete(id: number): Promise<boolean> {
     const projetos = await this.getAll();
     const index = projetos.findIndex(p => p.id === id);
     if (index === -1) return false;
     
-    // Remove todas as tarefas do projeto
+    // Remove tarefas do projeto
     const tarefas = await this.tarefaService.getByProjeto(id);
     for (const tarefa of tarefas) {
       await this.tarefaService.delete(tarefa.id);

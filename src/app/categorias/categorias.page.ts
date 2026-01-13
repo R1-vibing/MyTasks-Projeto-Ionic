@@ -3,9 +3,7 @@ import { AlertController } from '@ionic/angular';
 import { CategoriaService } from '../services/categoria.service';
 import { Categoria } from '../models/categoria.model';
 
-/**
- * Página para gerenciar Categorias (CRUD completo)
- */
+// Página de categorias
 @Component({
   selector: 'app-categorias',
   templateUrl: './categorias.page.html',
@@ -26,16 +24,10 @@ export class CategoriasPage implements OnInit {
     await this.carregarCategorias();
   }
 
-  /**
-   * Carrega todas as categorias do storage
-   */
   async carregarCategorias() {
     this.categorias = await this.categoriaService.getAll();
   }
 
-  /**
-   * Adiciona uma nova categoria
-   */
   async adicionarCategoria() {
     if (!this.nomeCategoria.trim()) {
       await this.mostrarAlerta('Erro', 'Por favor, insira um nome para a categoria.');
@@ -50,25 +42,16 @@ export class CategoriasPage implements OnInit {
     this.nomeCategoria = '';
   }
 
-  /**
-   * Inicia a edição de uma categoria
-   */
   iniciarEdicao(categoria: Categoria) {
     this.categoriaEditando = { ...categoria };
     this.nomeCategoria = categoria.nome;
   }
 
-  /**
-   * Cancela a edição
-   */
   cancelarEdicao() {
     this.categoriaEditando = null;
     this.nomeCategoria = '';
   }
 
-  /**
-   * Salva as alterações de uma categoria
-   */
   async salvarEdicao() {
     if (!this.categoriaEditando || !this.nomeCategoria.trim()) {
       await this.mostrarAlerta('Erro', 'Por favor, insira um nome válido.');
@@ -86,9 +69,6 @@ export class CategoriasPage implements OnInit {
     }
   }
 
-  /**
-   * Confirma e remove uma categoria
-   */
   async removerCategoria(categoria: Categoria) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -114,9 +94,6 @@ export class CategoriasPage implements OnInit {
     await alert.present();
   }
 
-  /**
-   * Mostra um alerta simples
-   */
   private async mostrarAlerta(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

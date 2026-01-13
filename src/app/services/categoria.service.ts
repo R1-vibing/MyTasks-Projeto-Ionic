@@ -3,9 +3,7 @@ import { Storage } from '@ionic/storage-angular';
 import { Categoria } from '../models/categoria.model';
 import { Observable, from } from 'rxjs';
 
-/**
- * Service para gerenciar CRUD de Categorias
- */
+// Service de categorias
 @Injectable({
   providedIn: 'root'
 })
@@ -17,9 +15,7 @@ export class CategoriaService {
     this.init();
   }
 
-  /**
-   * Inicializa o storage e carrega o próximo ID
-   */
+  // Inicializa storage
   private async init() {
     await this.storage.create();
     const categorias = await this.getAll();
@@ -28,25 +24,19 @@ export class CategoriaService {
     }
   }
 
-  /**
-   * Obtém todas as categorias
-   */
+  // Busca todas categorias
   async getAll(): Promise<Categoria[]> {
     const categorias = await this.storage.get(this.STORAGE_KEY);
     return categorias || [];
   }
 
-  /**
-   * Obtém uma categoria por ID
-   */
+  // Busca categoria por id
   async getById(id: number): Promise<Categoria | null> {
     const categorias = await this.getAll();
     return categorias.find(c => c.id === id) || null;
   }
 
-  /**
-   * Cria uma nova categoria
-   */
+  // Cria categoria
   async create(categoria: Omit<Categoria, 'id'>): Promise<Categoria> {
     const categorias = await this.getAll();
     const novaCategoria: Categoria = {
@@ -58,9 +48,7 @@ export class CategoriaService {
     return novaCategoria;
   }
 
-  /**
-   * Atualiza uma categoria existente
-   */
+  // Atualiza categoria
   async update(id: number, categoria: Partial<Categoria>): Promise<boolean> {
     const categorias = await this.getAll();
     const index = categorias.findIndex(c => c.id === id);
@@ -71,9 +59,7 @@ export class CategoriaService {
     return true;
   }
 
-  /**
-   * Remove uma categoria
-   */
+  // Remove categoria
   async delete(id: number): Promise<boolean> {
     const categorias = await this.getAll();
     const index = categorias.findIndex(c => c.id === id);

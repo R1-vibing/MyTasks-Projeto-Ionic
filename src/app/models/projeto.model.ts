@@ -1,6 +1,3 @@
-/**
- * Modelo para Projeto
- */
 export interface Projeto {
   id: number;
   nome: string;

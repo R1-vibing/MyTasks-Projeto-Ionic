@@ -6,10 +6,7 @@ import { CategoriaService } from '../services/categoria.service';
 import { Projeto } from '../models/projeto.model';
 import { Categoria } from '../models/categoria.model';
 
-/**
- * Página para gerenciar Projetos (CRUD completo)
- * Suporta filtro por categoria via parâmetro de rota
- */
+// Página de projetos
 @Component({
   selector: 'app-projetos',
   templateUrl: './projetos.page.html',
@@ -33,7 +30,6 @@ export class ProjetosPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // Verifica se há parâmetro de categoria na rota
     const categoriaId = this.route.snapshot.paramMap.get('categoriaId');
     if (categoriaId) {
       this.categoriaFiltro = Number(categoriaId);
@@ -43,9 +39,6 @@ export class ProjetosPage implements OnInit {
     await this.carregarDados();
   }
 
-  /**
-   * Carrega projetos e categorias
-   */
   async carregarDados() {
     this.todasCategorias = await this.categoriaService.getAll();
     
@@ -56,9 +49,6 @@ export class ProjetosPage implements OnInit {
     }
   }
 
-  /**
-   * Filtra projetos por categoria
-   */
   async filtrarPorCategoria() {
     if (this.categoriaSelecionada) {
       this.categoriaFiltro = this.categoriaSelecionada;
@@ -69,18 +59,12 @@ export class ProjetosPage implements OnInit {
     }
   }
 
-  /**
-   * Remove o filtro de categoria
-   */
   async removerFiltro() {
     this.categoriaFiltro = null;
     this.categoriaSelecionada = null;
     this.projetos = await this.projetoService.getAll();
   }
 
-  /**
-   * Adiciona um novo projeto
-   */
   async adicionarProjeto() {
     if (!this.nomeProjeto.trim()) {
       await this.mostrarAlerta('Erro', 'Por favor, insira um nome para o projeto.');
@@ -102,27 +86,18 @@ export class ProjetosPage implements OnInit {
     this.categoriaSelecionada = this.categoriaFiltro;
   }
 
-  /**
-   * Inicia a edição de um projeto
-   */
   iniciarEdicao(projeto: Projeto) {
     this.projetoEditando = { ...projeto };
     this.nomeProjeto = projeto.nome;
     this.categoriaSelecionada = projeto.categoriaId;
   }
 
-  /**
-   * Cancela a edição
-   */
   cancelarEdicao() {
     this.projetoEditando = null;
     this.nomeProjeto = '';
     this.categoriaSelecionada = this.categoriaFiltro;
   }
 
-  /**
-   * Salva as alterações de um projeto
-   */
   async salvarEdicao() {
     if (!this.projetoEditando || !this.nomeProjeto.trim()) {
       await this.mostrarAlerta('Erro', 'Por favor, insira um nome válido.');
@@ -148,9 +123,6 @@ export class ProjetosPage implements OnInit {
     }
   }
 
-  /**
-   * Confirma e remove um projeto (e suas tarefas)
-   */
   async removerProjeto(projeto: Projeto) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -176,31 +148,19 @@ export class ProjetosPage implements OnInit {
     await alert.present();
   }
 
-  /**
-   * Navega para a lista de tarefas do projeto
-   */
   verTarefas(projetoId: number) {
     this.router.navigate(['/lista'], { queryParams: { projetoId } });
   }
 
-  /**
-   * Navega para criar uma nova tarefa no projeto
-   */
   criarTarefa(projetoId: number) {
     this.router.navigate(['/tarefa', 'novo'], { queryParams: { projetoId } });
   }
 
-  /**
-   * Obtém o nome da categoria pelo ID
-   */
   getNomeCategoria(categoriaId: number): string {
     const categoria = this.todasCategorias.find(c => c.id === categoriaId);
     return categoria ? categoria.nome : 'Desconhecida';
   }
 
-  /**
-   * Mostra um alerta simples
-   */
   private async mostrarAlerta(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

@@ -6,10 +6,7 @@ import { ProjetoService } from '../services/projeto.service';
 import { Tarefa } from '../models/tarefa.model';
 import { Projeto } from '../models/projeto.model';
 
-/**
- * Página para visualizar, criar e editar tarefas
- * Suporta upload de imagem, data limite e mover entre projetos
- */
+// Página de tarefa
 @Component({
   selector: 'app-tarefa',
   templateUrl: './tarefa.page.html',
@@ -22,11 +19,10 @@ export class TarefaPage implements OnInit {
   isEditando = false;
   isNova = false;
 
-  // Campos do formulário
   titulo: string = '';
   descricao: string = '';
-  dataLimite: string = ''; // ISO string para storage
-  dataLimiteFormatada: string = ''; // Formato YYYY-MM-DD para input
+  dataLimite: string = '';
+  dataLimiteFormatada: string = '';
   imagem: string = '';
   projetoId: number | null = null;
 
@@ -43,14 +39,12 @@ export class TarefaPage implements OnInit {
   async ngOnInit() {
     this.todosProjetos = await this.projetoService.getAll();
     
-    // Verifica se é nova tarefa ou edição
     this.tarefaId = this.route.snapshot.paramMap.get('id');
     
     if (this.tarefaId === 'novo') {
       this.isNova = true;
       this.isEditando = true;
       
-      // Verifica se há projetoId na query
       this.route.queryParams.subscribe(params => {
         const projetoId = params['projetoId'];
         if (projetoId) {
@@ -62,15 +56,11 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Carrega uma tarefa do storage
-   */
   async carregarTarefa(id: number) {
     this.tarefa = await this.tarefaService.getById(id);
     if (this.tarefa) {
       this.titulo = this.tarefa.titulo;
       this.descricao = this.tarefa.descricao;
-      // Converte ISO string para formato YYYY-MM-DD do input
       if (this.tarefa.dataLimite) {
         const date = new Date(this.tarefa.dataLimite);
         this.dataLimite = this.tarefa.dataLimite;
@@ -84,16 +74,10 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Inicia a edição
-   */
   iniciarEdicao() {
     this.isEditando = true;
   }
 
-  /**
-   * Cancela a edição
-   */
   cancelarEdicao() {
     if (this.isNova) {
       this.router.navigate(['/lista']);
@@ -105,17 +89,11 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Quando a data é alterada no input
-   */
   onDataChange(event: any) {
     const valor = event.detail?.value || event.target?.value || '';
     this.dataLimiteFormatada = valor;
   }
 
-  /**
-   * Salva a tarefa (cria ou atualiza)
-   */
   async salvarTarefa() {
     if (!this.titulo.trim()) {
       await this.mostrarAlerta('Erro', 'Por favor, insira um título para a tarefa.');
@@ -127,23 +105,19 @@ export class TarefaPage implements OnInit {
       return;
     }
 
-    // Converte a data formatada (YYYY-MM-DD) para ISO string se fornecida
     let dataLimiteISO = '';
     if (this.dataLimiteFormatada && this.dataLimiteFormatada.trim()) {
       try {
-        // Adiciona hora para garantir timezone correto
         const date = new Date(this.dataLimiteFormatada + 'T00:00:00');
         if (!isNaN(date.getTime())) {
           dataLimiteISO = date.toISOString();
         }
       } catch (e) {
-        // Se houver erro na conversão, deixa vazio
         dataLimiteISO = '';
       }
     }
 
     if (this.isNova) {
-      // Criar nova tarefa
       const novaTarefa = await this.tarefaService.create({
         titulo: this.titulo.trim(),
         descricao: this.descricao.trim(),
@@ -155,7 +129,6 @@ export class TarefaPage implements OnInit {
       await this.mostrarAlerta('Sucesso', 'Tarefa criada com sucesso!');
       this.router.navigate(['/lista'], { queryParams: { projetoId: this.projetoId } });
     } else if (this.tarefa) {
-      // Atualizar tarefa existente
       const sucesso = await this.tarefaService.update(this.tarefa.id, {
         titulo: this.titulo.trim(),
         descricao: this.descricao.trim(),
@@ -172,9 +145,6 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Remove a tarefa
-   */
   async removerTarefa() {
     if (!this.tarefa) return;
 
@@ -203,9 +173,6 @@ export class TarefaPage implements OnInit {
     await alert.present();
   }
 
-  /**
-   * Move a tarefa para outro projeto
-   */
   async moverParaProjeto() {
     if (!this.tarefa || !this.projetoId) return;
 
@@ -216,25 +183,19 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Quando um arquivo é selecionado do explorador
-   */
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      // Verifica se é uma imagem
       if (!file.type.startsWith('image/')) {
         await this.mostrarAlerta('Erro', 'Por favor, selecione um arquivo de imagem.');
         return;
       }
 
-      // Verifica o tamanho (limite de 5MB)
       if (file.size > 5 * 1024 * 1024) {
         await this.mostrarAlerta('Erro', 'A imagem é muito grande. Por favor, selecione uma imagem menor que 5MB.');
         return;
       }
 
-      // Lê o arquivo e converte para base64
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.imagem = e.target.result;
@@ -247,25 +208,16 @@ export class TarefaPage implements OnInit {
   }
 
 
-  /**
-   * Remove a imagem
-   */
   removerImagem() {
     this.imagem = '';
   }
 
-  /**
-   * Formata a data para exibição
-   */
   formatarData(data: string): string {
     if (!data) return 'Sem data limite';
     const date = new Date(data);
     return date.toLocaleDateString('pt-BR');
   }
 
-  /**
-   * Formata a data do input para exibição
-   */
   formatarDataInput(data: string): string {
     if (!data) return '';
     try {
@@ -276,17 +228,11 @@ export class TarefaPage implements OnInit {
     }
   }
 
-  /**
-   * Limpa a data limite
-   */
   limparDataLimite() {
     this.dataLimiteFormatada = '';
     this.dataLimite = '';
   }
 
-  /**
-   * Verifica se a tarefa está em atraso
-   */
   isTarefaAtrasada(): boolean {
     if (!this.tarefa || !this.tarefa.dataLimite) return false;
     const dataLimite = new Date(this.tarefa.dataLimite);
@@ -294,17 +240,11 @@ export class TarefaPage implements OnInit {
     return dataLimite < agora;
   }
 
-  /**
-   * Obtém o nome do projeto
-   */
   getNomeProjeto(projetoId: number): string {
     const projeto = this.todosProjetos.find(p => p.id === projetoId);
     return projeto ? projeto.nome : 'Projeto desconhecido';
   }
 
-  /**
-   * Mostra um alerta simples
-   */
   private async mostrarAlerta(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

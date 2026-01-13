@@ -6,10 +6,7 @@ import { ProjetoService } from '../services/projeto.service';
 import { Tarefa } from '../models/tarefa.model';
 import { Projeto } from '../models/projeto.model';
 
-/**
- * Página para listar e gerenciar tarefas
- * Suporta filtro por projeto via query parameter
- */
+// Página de lista de tarefas
 @Component({
   selector: 'app-lista',
   templateUrl: './lista.page.html',
@@ -33,7 +30,6 @@ export class ListaPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // Verifica se há parâmetro de projeto na query
     this.route.queryParams.subscribe(async params => {
       const projetoId = params['projetoId'];
       if (projetoId) {
@@ -44,9 +40,6 @@ export class ListaPage implements OnInit {
     });
   }
 
-  /**
-   * Carrega tarefas do storage
-   */
   async carregarTarefas() {
     this.todosProjetos = await this.projetoService.getAll();
     
@@ -60,9 +53,6 @@ export class ListaPage implements OnInit {
     this.tarefasAtrasadas = await this.tarefaService.getTarefasAtrasadas();
   }
 
-  /**
-   * Verifica se uma tarefa está em atraso
-   */
   isTarefaAtrasada(tarefa: Tarefa): boolean {
     if (!tarefa.dataLimite) return false;
     const dataLimite = new Date(tarefa.dataLimite);
@@ -70,25 +60,16 @@ export class ListaPage implements OnInit {
     return dataLimite < agora;
   }
 
-  /**
-   * Formata a data para exibição
-   */
   formatarData(data: string): string {
     if (!data) return 'Sem data limite';
     const date = new Date(data);
     return date.toLocaleDateString('pt-BR');
   }
 
-  /**
-   * Navega para a página de detalhes/edição da tarefa
-   */
   verTarefa(tarefaId: number) {
     this.router.navigate(['/tarefa', tarefaId]);
   }
 
-  /**
-   * Remove uma tarefa
-   */
   async removerTarefa(tarefaId: number) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -114,9 +95,6 @@ export class ListaPage implements OnInit {
     await alert.present();
   }
 
-  /**
-   * Reordena tarefas
-   */
   async reordenarTarefas(event: any) {
     const itemToMove = this.tarefas.splice(event.detail.from, 1)[0];
     this.tarefas.splice(event.detail.to, 0, itemToMove);
@@ -124,9 +102,6 @@ export class ListaPage implements OnInit {
     event.detail.complete();
   }
 
-  /**
-   * Navega para criar nova tarefa
-   */
   novaTarefa() {
     if (this.projetoFiltro) {
       this.router.navigate(['/tarefa', 'novo'], { queryParams: { projetoId: this.projetoFiltro } });
@@ -135,9 +110,6 @@ export class ListaPage implements OnInit {
     }
   }
 
-  /**
-   * Obtém o nome do projeto
-   */
   getNomeProjeto(projetoId: number): string {
     const projeto = this.todosProjetos.find(p => p.id === projetoId);
     return projeto ? projeto.nome : 'Projeto desconhecido';

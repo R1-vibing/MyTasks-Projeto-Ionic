@@ -3,10 +3,7 @@ import { Router } from '@angular/router';
 import { TarefaService } from '../services/tarefa.service';
 import { Tarefa } from '../models/tarefa.model';
 
-/**
- * Página de Calendário
- * Mostra as datas limite das tarefas e permite selecionar para visualizar/editar
- */
+// Página de calendário
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.page.html',
@@ -26,29 +23,22 @@ export class CalendarioPage implements OnInit {
 
   async ngOnInit() {
     await this.carregarTarefas();
-    // Define a data selecionada como hoje
     const hoje = new Date();
     this.dataSelecionada = hoje.toISOString().split('T')[0];
     this.filtrarTarefasPorData();
   }
 
-  /**
-   * Carrega todas as tarefas do storage
-   */
   async carregarTarefas() {
     this.todasTarefas = await this.tarefaService.getAll();
     this.organizarTarefasPorData();
   }
 
-  /**
-   * Organiza tarefas por data
-   */
   organizarTarefasPorData() {
     this.tarefasPorData.clear();
     
     this.todasTarefas.forEach(tarefa => {
       if (tarefa.dataLimite) {
-        const data = tarefa.dataLimite.split('T')[0]; // Apenas a data, sem hora
+        const data = tarefa.dataLimite.split('T')[0];
         if (!this.tarefasPorData.has(data)) {
           this.tarefasPorData.set(data, []);
         }
@@ -57,9 +47,6 @@ export class CalendarioPage implements OnInit {
     });
   }
 
-  /**
-   * Filtra tarefas pela data selecionada
-   */
   filtrarTarefasPorData() {
     if (this.dataSelecionada) {
       this.tarefasDoDia = this.tarefasPorData.get(this.dataSelecionada) || [];
@@ -68,30 +55,18 @@ export class CalendarioPage implements OnInit {
     }
   }
 
-  /**
-   * Quando a data é alterada no calendário
-   */
   onDataChange() {
     this.filtrarTarefasPorData();
   }
 
-  /**
-   * Verifica se uma data tem tarefas
-   */
   dataTemTarefas(data: string): boolean {
     return this.tarefasPorData.has(data) && this.tarefasPorData.get(data)!.length > 0;
   }
 
-  /**
-   * Obtém o número de tarefas de uma data
-   */
   getNumeroTarefas(data: string): number {
     return this.tarefasPorData.get(data)?.length || 0;
   }
 
-  /**
-   * Verifica se uma tarefa está em atraso
-   */
   isTarefaAtrasada(tarefa: Tarefa): boolean {
     if (!tarefa.dataLimite) return false;
     const dataLimite = new Date(tarefa.dataLimite);
@@ -99,9 +74,6 @@ export class CalendarioPage implements OnInit {
     return dataLimite < agora;
   }
 
-  /**
-   * Formata a data para exibição
-   */
   formatarData(data: string): string {
     if (!data) return '';
     const date = new Date(data);
@@ -113,16 +85,10 @@ export class CalendarioPage implements OnInit {
     });
   }
 
-  /**
-   * Navega para visualizar/editar a tarefa
-   */
   verTarefa(tarefaId: number) {
     this.router.navigate(['/tarefa', tarefaId]);
   }
 
-  /**
-   * Obtém todas as datas que têm tarefas
-   */
   getDatasComTarefas(): string[] {
     return Array.from(this.tarefasPorData.keys()).sort();
   }
